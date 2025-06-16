@@ -1,17 +1,39 @@
-const express = require("express");
-const app = express();
+const http = require("http");
 
-app.get("*", (req, res) => {
-  const url = req.url;
-  if (url.includes("ps3-updatelist.txt")) {
-    // Redireciona para o arquivo hospedado via HTTP
-    res.redirect("http://update.superstoregames.com/PS3/list/ps3-updatelist.txt");
+const server = http.createServer((req, res) => {
+  // Captura a URL simulada da Sony
+  const fullPath = req.url;
+
+  // Verifica se é a atualização do PS3
+  if (fullPath.includes("ps3-updatelist.txt")) {
+    // Monta o novo caminho real, ignorando o domínio simulado
+    const redirectPath = fullPath.replace(/^\/[^\/]+\.ps3\.update\.playstation\.net/, "");
+
+    const options = {
+      hostname: "update.superstoregames.com",
+      port: 80,
+      path: redirectPath,
+      method: "GET"
+    };
+
+    const proxy = http.request(options, proxyRes => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res);
+    });
+
+    proxy.on("error", err => {
+      res.writeHead(502, { "Content-Type": "text/plain" });
+      res.end("Erro ao redirecionar atualização do PS3.");
+    });
+
+    proxy.end();
   } else {
-    res.status(404).send("Arquivo não encontrado.");
+    res.writeHead(403, { "Content-Type": "text/plain" });
+    res.end("Acesso negado: proxy PS3 ativo apenas para update.");
   }
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`Servidor proxy rodando na porta ${PORT}`);
+const PORT = process.env.PORT || 80;
+server.listen(PORT, () => {
+  console.log("Servidor proxy do PS3 está rodando na porta " + PORT);
 });
