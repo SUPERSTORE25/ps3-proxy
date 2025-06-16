@@ -4,7 +4,7 @@ const server = http.createServer((req, res) => {
   const fullPath = req.url;
 
   if (fullPath.includes("ps3-updatelist.txt")) {
-    const redirectPath = "/PS3" + fullPath.replace(/^\/[^\/]+\.ps3\.update\.playstation\.net/, "");
+    const redirectPath = "/PS3/list/ps3-updatelist.txt";
 
     const options = {
       hostname: "update.superstoregames.com",
