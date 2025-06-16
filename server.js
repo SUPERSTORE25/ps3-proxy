@@ -1,13 +1,10 @@
 const http = require("http");
 
 const server = http.createServer((req, res) => {
-  // Captura a URL simulada da Sony
   const fullPath = req.url;
 
-  // Verifica se é a atualização do PS3
   if (fullPath.includes("ps3-updatelist.txt")) {
-    // Monta o novo caminho real, ignorando o domínio simulado
-    const redirectPath = fullPath.replace(/^\/[^\/]+\.ps3\.update\.playstation\.net/, "");
+    const redirectPath = "/PS3" + fullPath.replace(/^\/[^\/]+\.ps3\.update\.playstation\.net/, "");
 
     const options = {
       hostname: "update.superstoregames.com",
@@ -22,6 +19,7 @@ const server = http.createServer((req, res) => {
     });
 
     proxy.on("error", err => {
+      console.error("Erro no proxy:", err);
       res.writeHead(502, { "Content-Type": "text/plain" });
       res.end("Erro ao redirecionar atualização do PS3.");
     });
