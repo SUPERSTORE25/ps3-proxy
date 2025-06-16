@@ -1,0 +1,12 @@
+{
+  "name": "ps3-proxy-server",
+  "version": "1.0.0",
+  "description": "Servidor proxy para PS3 via Render",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
